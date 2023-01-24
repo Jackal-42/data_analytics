@@ -1,0 +1,5 @@
+- Gridlines and units on axes (relative and absolute)
+- Window management
+- Predictive trendline
+- Universal settings / styles
+- Custom bounds

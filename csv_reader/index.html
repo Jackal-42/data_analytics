@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Data Analytics</title>
+
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div id="background"></div>
+
+    <template id="window">
+        <p id="header" style="background-color: rgb(42, 42, 42); width: calc(100% - 6px); text-align: left; cursor: move;
+        padding-bottom: 6px; padding-top: 6px; padding-left: 6px; margin: 0px; font-weight: bold;
+        font-family: monospace; color: lightgray;">Header</p>
+
+        <p style="font-weight: bold; color: white; position: absolute; top: 0px; right: 0px; margin: 0px; padding: 2px;
+        padding-left: 4px; padding-bottom: 4px; cursor: pointer;" onclick="
+            for(let i = 0; i < graphs.length; i++) {
+                let canvas = this.parentElement.getElementsByTagName('canvas')[0];
+                if(graphs[i][1] == canvas){
+                    graphs.splice(i, 1);
+                    break;
+                }
+            }
+            this.parentElement.remove();
+        "><b>✕&nbsp;</b></p>
+
+        <canvas style="background-color: white; margin: 0px; padding: 0px; display: block;">
+
+        </canvas>
+    </template>
+
+    <div id="contextMenu">
+        <p>Test</p>
+    </div>
+
+    <div id="topbar">
+        <p class="context" onclick="contextMenu('cm_window')">
+            Window
+        </p>
+    </div>
+
+    <p id="test"></p>
+
+    <!-- CONTEXT MENU TEMPLATES -->
+
+    <template id="cm_window">
+        <ul>
+            <li class="context" onclick="contextMenu('cm_window>graph')">
+                Graph
+            </li>
+        </ul>
+    </template>
+
+    <template id="cm_window>graph">
+        <ul>
+            <li onclick="createGraph('Sec')">
+                Seconds
+            </li>
+
+            <li onclick="createGraph('Ah')">
+                Amp-Hours
+            </li>
+
+            <li onclick="createGraph('V')">
+                Volts
+            </li>
+
+            <li onclick="createGraph('A')">
+                A
+            </li>
+
+            <li onclick="createGraph('S')">
+                S
+            </li>
+
+            <li onclick="createGraph('D')">
+                D
+            </li>
+        </ul>
+    </template>
+
+    <template id="cm_graph">
+        <ul>
+            <li>
+                what about now its time to rock with the biggity buck bumble
+            </li>
+        </ul>
+    </template>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="loader.js"></script>
+</body>
