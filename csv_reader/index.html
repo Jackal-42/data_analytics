@@ -9,10 +9,10 @@
 <body>
     <div id="background"></div>
 
-    <template id="window">
+    <template id="graph">
         <p id="header" style="background-color: rgb(42, 42, 42); width: calc(100% - 6px); text-align: left; cursor: move;
         padding-bottom: 6px; padding-top: 6px; padding-left: 6px; margin: 0px; font-weight: bold;
-        font-family: monospace; color: lightgray;">Header</p>
+        font-family: monospace; color: lightgray; height: 16px;">Header</p>
 
         <p style="font-weight: bold; color: white; position: absolute; top: 0px; right: 0px; margin: 0px; padding: 2px;
         padding-left: 4px; padding-bottom: 4px; cursor: pointer;" onclick="
@@ -29,6 +29,28 @@
         <canvas style="background-color: white; margin: 0px; padding: 0px; display: block;">
 
         </canvas>
+    </template>
+
+    <template id="properties">
+        <p id="header" style="background-color: rgb(42, 42, 42); width: calc(100% - 6px); text-align: left; cursor: move;
+        padding-bottom: 6px; padding-top: 6px; padding-left: 6px; margin: 0px; font-weight: bold;
+        font-family: monospace; color: lightgray; height: 30px;">Header</p>
+
+        <p style="font-weight: bold; color: white; position: absolute; top: 0px; right: 0px; margin: 0px; padding: 2px;
+        padding-left: 4px; padding-bottom: 4px; cursor: pointer;" onclick="this.parentElement.remove();"><b>✕&nbsp;</b></p>
+        <span style="display: block;"></span>
+
+        <div style="position: absolute; width: 100%; height: calc(100% - 28px); top: 28px; left: 0px; background-color: white;
+        font-family: monospace;">
+            <p style="margin: 0px;">Step X: <input style="width: 50px; font-family: monospace;" type="text" oninput="propertiesById(parseInt(this.parentElement.parentElement.parentElement.getElementsByTagName('span')[0].innerHTML))
+            .stepX = parseFloat(this.value)"></p>
+            <p style="margin: 0px;">Step Y: <input style="width: 50px; font-family: monospace;" type="text" oninput="propertiesById(parseInt(this.parentElement.parentElement.parentElement.getElementsByTagName('span')[0].innerHTML))
+            .stepY = parseFloat(this.value)"></p>
+            <p style="margin: 0px;">Duration (sec): <input style="width: 50px; font-family: monospace;" type="text" oninput="propertiesById(parseInt(this.parentElement.parentElement.parentElement.getElementsByTagName('span')[0].innerHTML))
+            .duration = parseFloat(this.value)"></p>
+            <p style="margin: 0px;">Scale: <input style="width: 50px; font-family: monospace;" type="text" oninput="propertiesById(parseInt(this.parentElement.parentElement.parentElement.getElementsByTagName('span')[0].innerHTML))
+            .scale = parseFloat(this.value)"></p>
+        </div>
     </template>
 
     <div id="contextMenu">
@@ -55,27 +77,27 @@
 
     <template id="cm_window>graph">
         <ul>
-            <li onclick="createGraph('Sec')">
+            <li onclick="createWindow('Graph', 'Sec')">
                 Seconds
             </li>
 
-            <li onclick="createGraph('Ah')">
+            <li onclick="createWindow('Graph', 'Ah')">
                 Amp-Hours
             </li>
 
-            <li onclick="createGraph('V')">
+            <li onclick="createWindow('Graph', 'V')">
                 Volts
             </li>
 
-            <li onclick="createGraph('A')">
+            <li onclick="createWindow('Graph', 'A')">
                 A
             </li>
 
-            <li onclick="createGraph('S')">
+            <li onclick="createWindow('Graph', 'S')">
                 S
             </li>
 
-            <li onclick="createGraph('D')">
+            <li onclick="createWindow('Graph', 'D')">
                 D
             </li>
         </ul>
@@ -83,8 +105,8 @@
 
     <template id="cm_graph">
         <ul>
-            <li>
-                what about now its time to rock with the biggity buck bumble
+            <li onclick="createWindow('Properties', 'null')">
+                Properties
             </li>
         </ul>
     </template>

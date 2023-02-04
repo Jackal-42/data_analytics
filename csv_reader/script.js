@@ -51,6 +51,8 @@ let graphSize = graphDuration * updateFrequency;
 setInterval(update, 1000/updateFrequency);
 //update();
 
+createWindow("Graph", "Sec");
+
 function update(){
     //getData();
     doGET("../ev_data/temp.csv", handleFileData);
@@ -113,9 +115,6 @@ function renderGraph(graph){
         let stepX = properties.stepX;
         let stepY = properties.stepY;
 
-        let edgeGap = Math.min(width, height) * properties.axisProportions;
-        let inverseProp = 1 - properties.axisProportions;
-
         let ctx = canvas.getContext("2d");
         ctx.clearRect(0, 0, width, height);
 
@@ -124,14 +123,6 @@ function renderGraph(graph){
         ctx.lineWidth = properties.lineThickness;
         ctx.strokeStyle="rgba(0, 0, 0, 1)";
         canvas.style.backgroundColor = properties.backgroundColor;
-
-        //Axes
-
-        //Y-Axis
-        drawLine(ctx, edgeGap, 0, edgeGap, height - edgeGap);
-
-        //X-Axis
-        drawLine(ctx, edgeGap, height - edgeGap, width, height - edgeGap);
         
 
         // TODO: custom min and max, styles
@@ -144,9 +135,11 @@ function renderGraph(graph){
         let min = Math.min.apply(Math, filtered);
         let max = Math.max.apply(Math, filtered);
 
+        graph[3].innerHTML = graph[0] + " | " + recent[recent.length - 1][j];
+
         let range = max - min;
         let ratio = height / 2 / range;
-        let adjustedMin = (min * ratio) - height / 4;
+        let adjustedMin = height / 4;
 
         let tMin = 0;
         let tMax = 0;
@@ -157,43 +150,45 @@ function renderGraph(graph){
             tMin = parseInt(recent[0][0]);
             tMax = parseInt(recent[recent.length - 1][0]);
         }
-        let axisRatio = (width)/(tMax - tMin);
+        let rangeX = tMax - tMin;
+        let ratioX = width / rangeX;
 
-        ctx.strokeStyle="rgba(0, 0, 0, 0.5)";
+        ctx.strokeStyle="rgba(0, 0, 0, 0.25)";
         ctx.font = "Monospace";
 
-        for(let i = Math.round(tMin); i < tMax; i++){
-            if(i % stepX == 0){
-                ctx.save();
-                let pos = edgeGap + (i - tMin)*axisRatio*Math.sqrt(inverseProp);
-                drawLine(ctx, pos, 0, pos, height - edgeGap);
-                ctx.translate(pos + 3, height - 2);
-                ctx.rotate(-90 * Math.PI / 180);
-                ctx.fillText(i, 0, 0);
-                ctx.restore();
-            }
+        let start = nextMultiple(tMin, properties.stepX);
+        let end = previousMultiple(tMax, properties.stepX);
+
+        for(let i = start; i <= end; i += properties.stepX){
+            let pos = ((i-tMin) * ratioX);
+            ctx.beginPath();
+            ctx.moveTo(pos, 0);
+            ctx.lineTo(pos, height);
+            ctx.stroke();
+            ctx.fillText(i, pos + 2, height - 2);
         }
 
-        axisRatio = (height / Math.sqrt(inverseProp))/(max - min);
-        //console.log(min);
-        for(let i = Math.floor(min-range/2); i < max + (range/2); i += 1){
-            if(Math.floor(i) % stepY == 0){
-                ctx.save();
-                let pos = height-(((i - Math.floor(min-range/2))+range/2)*axisRatio/2-edgeGap)*Math.sqrt(inverseProp);
-                drawLine(ctx, edgeGap, pos, width, pos);
-                ctx.translate(0, pos);
-                ctx.fillText(i, 0, 0);
-                ctx.restore();
-            }
+        start = nextMultiple(min, properties.stepY);
+        end = previousMultiple(max, properties.stepY);
+        difference = end - start;
+
+        for(let i = start - difference/2; i <= end + difference/2; i += properties.stepY){
+            let pos = height - (((i-min) * ratio) + adjustedMin);
+            ctx.beginPath();
+            ctx.moveTo(0, pos);
+            ctx.lineTo(width, pos);
+            ctx.stroke();
+            ctx.fillText(i, 0, pos - 2);
         }
 
         ctx.strokeStyle = properties.color;
         ctx.beginPath();
         for (let k = 0, kl = recent.length; k < kl; k++){
             if(k == 0){
-                ctx.moveTo(edgeGap + progress, height - edgeGap - (recent[k][j] * ratio) + adjustedMin);
+                ctx.moveTo(progress, height - (((recent[k][j]-min) * ratio) + adjustedMin));
+                // console.log(height - (((recent[k][j]-min) * ratio)));
             }else{
-                ctx.lineTo(edgeGap + progress * inverseProp, (height - (recent[k][j] * ratio) + adjustedMin) * inverseProp - edgeGap);
+                ctx.lineTo(progress, height - (((recent[k][j]-min) * ratio) + adjustedMin));
                 //ctx.stroke();
             }
             progress += interval;
@@ -209,6 +204,7 @@ function drawLine(ctx, x1, y1, x2, y2){
     ctx.stroke();
 }
 
+//x is the step size
 function closestMultiple(n, x)
 {  
     n = n + x/2;

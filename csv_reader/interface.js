@@ -3,7 +3,8 @@ let graphs = [];
 // let canvas = document.createElement('canvas');
 // canvas.style.backgroundColor = 'lightgray';
 // graph.appendChild(canvas);
-let template = document.getElementById('window');
+let graphTemplate = document.getElementById('graph');
+let propertiesTemplate = document.getElementById('properties');
 let usedIDs = 0;
 
 const observer = new ResizeObserver(entries => {
@@ -21,12 +22,14 @@ const observer = new ResizeObserver(entries => {
 })
 
 function graphProperties(){
+    this.id = 0;
+    this.name = "";
     this.duration = 30;
     this.scale = 1;
     this.color = "rgba(0, 71, 171, 1)";
     this.lineThickness = 2;
     this.backgroundColor = "rgb(255, 255, 255)";
-    this.axisProportions = 0.15;
+    this.axisProportions = 0;
     this.relativeTime = true;
     this.stepX = 10;
     this.stepY = 4;
@@ -34,33 +37,75 @@ function graphProperties(){
     this.minorY = 1;
 }
 
-function createGraph(type) {
+let recentGraph;
+
+function createWindow(type, variant) {
     let elem = document.createElement('div')
     elem.style = `position: absolute; border-radius: 6px; overflow: hidden;
         box-shadow: 6px 6px 8px rgb(42, 42, 42, 0.25); resize: both;
         min-width: 200px; min-height: 160px;`
     elem.classList.add('window');
-    elem.append(template.content.cloneNode(true));
-    elem.id = "window_" + usedIDs;
-    let topbar = elem.children[0];
-    topbar.id = "window_" + usedIDs + "_header"
 
-    topbar.addEventListener("contextmenu", function(e){
-        e.preventDefault();
-        contextMenu("cm_graph");
-    })
+    if(type == "Graph"){
+        elem.append(graphTemplate.content.cloneNode(true));
+        elem.id = "window_" + usedIDs;
+        let topbar = elem.children[0];
+        topbar.id = "window_" + usedIDs + "_header"
 
-    topbar.innerHTML = type;
+        topbar.innerHTML = type;
+
+        graphs.push([variant, elem.getElementsByTagName('canvas')[0], new graphProperties(), topbar]);
+        graphs[graphs.length - 1][2].id = usedIDs;
+        graphs[graphs.length - 1][2].name = variant;
+
+        eval(`
+            topbar.addEventListener("contextmenu", function(e){
+                e.preventDefault();
+                recentGraph = ` + usedIDs + `;
+                contextMenu("cm_graph");
+            })
+        `)
+    }else if(type == "Properties"){
+        elem.append(propertiesTemplate.content.cloneNode(true));
+        elem.id = "window_" + usedIDs;
+        let topbar = elem.children[0];
+        topbar.id = "window_" + usedIDs + "_header";
+
+        let prop = propertiesById(recentGraph);
+        topbar.innerHTML = "Properties of \'" + prop.name + "\'";
+
+        let paraFields = elem.getElementsByTagName("div")[0].getElementsByTagName("p");
+        let inputFields = [];
+        for(let i = 0; i < paraFields.length; i++) {
+            inputFields.push(paraFields[i].getElementsByTagName("input")[0]);
+        }
+
+        inputFields[0].value = prop.stepX.toString();
+        inputFields[1].value = prop.stepY.toString();
+        inputFields[2].value = prop.duration.toString();
+        inputFields[3].value = prop.scale.toString();
+
+        elem.getElementsByTagName('span')[0].innerHTML = recentGraph;
+    }
+
     document.body.appendChild(elem);
     elem.style.top = "100px";
     elem.style.left = "100px";
-    observer.observe(elem);
+    if(type == "Graph"){
+        observer.observe(elem);
+    }
     dragElement(elem);
-    graphs.push([type, elem.getElementsByTagName('canvas')[0], new graphProperties()]);
+
     usedIDs++;
 }
 
-
+function propertiesById(id){
+    for(let i = 0; i < graphs.length; i++) {
+        if(graphs[i][2].id == id){
+            return graphs[i][2];
+        }
+    }
+}
 
 function dragElement(elmnt)
 {
