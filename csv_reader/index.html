@@ -41,15 +41,23 @@
         <span style="display: block;"></span>
 
         <div style="position: absolute; width: 100%; height: calc(100% - 28px); top: 28px; left: 0px; background-color: white;
-        font-family: monospace;">
+        font-family: monospace; overflow: scroll; padding-left: 2px;">
             <p style="margin: 0px;">Step X: <input style="width: 50px; font-family: monospace;" type="text" oninput="propertiesById(parseInt(this.parentElement.parentElement.parentElement.getElementsByTagName('span')[0].innerHTML))
             .stepX = parseFloat(this.value)"></p>
             <p style="margin: 0px;">Step Y: <input style="width: 50px; font-family: monospace;" type="text" oninput="propertiesById(parseInt(this.parentElement.parentElement.parentElement.getElementsByTagName('span')[0].innerHTML))
             .stepY = parseFloat(this.value)"></p>
             <p style="margin: 0px;">Duration (sec): <input style="width: 50px; font-family: monospace;" type="text" oninput="propertiesById(parseInt(this.parentElement.parentElement.parentElement.getElementsByTagName('span')[0].innerHTML))
             .duration = parseFloat(this.value)"></p>
-            <p style="margin: 0px;">Scale: <input style="width: 50px; font-family: monospace;" type="text" oninput="propertiesById(parseInt(this.parentElement.parentElement.parentElement.getElementsByTagName('span')[0].innerHTML))
-            .scale = parseFloat(this.value)"></p>
+            <p style="margin: 0px;">Relative Time <input type="checkbox" onchange="propertiesById(parseInt(this.parentElement.parentElement.parentElement.getElementsByTagName('span')[0].innerHTML))
+            .relativeTime = this.checked"></p>
+            <br>
+            <p style="margin: 0px;">Color:<br><input style="width: 200px; font-family: monospace;" type="text" oninput="propertiesById(parseInt(this.parentElement.parentElement.parentElement.getElementsByTagName('span')[0].innerHTML))
+            .color = this.value"></p>
+            <p style="margin: 0px;">Background Color:<br><input style="width: 200px; font-family: monospace;" type="text" oninput="propertiesById(parseInt(this.parentElement.parentElement.parentElement.getElementsByTagName('span')[0].innerHTML))
+            .backgroundColor = this.value"></p>
+            <p style="margin: 0px;">Line Thickness: <input style="width: 50px; font-family: monospace;" type="text" oninput="propertiesById(parseInt(this.parentElement.parentElement.parentElement.getElementsByTagName('span')[0].innerHTML))
+            .lineThickness = parseFloat(this.value)"></p>
+            
         </div>
     </template>
 

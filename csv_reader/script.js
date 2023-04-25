@@ -1,4 +1,4 @@
-let graphDuration = 30;
+let graphDuration = 60;
 let updateFrequency = 5;
 
 let contents = "";
@@ -7,11 +7,11 @@ let recent = [];
 let header = [];
 
 // retrieve the CSV data at regular intervals [DEPRECATED]
-function getData(){
-    $.get("../ev_data/temp.csv", function(data) {
-        contentString = data;
-    });
-}
+// function getData(){
+//     $.get("../ev_data/temp.csv", function(data) {
+//         contentString = data;
+//     });
+// }
 
 function doGET(path, callback) {
     var xhr = new XMLHttpRequest();
@@ -51,11 +51,11 @@ let graphSize = graphDuration * updateFrequency;
 setInterval(update, 1000/updateFrequency);
 //update();
 
-createWindow("Graph", "Sec");
+createWindow("Graph", "V");
 
 function update(){
     //getData();
-    doGET("../ev_data/temp.csv", handleFileData);
+    doGET("../ev_data/car_data.csv", handleFileData);
     let contents = contentString;
     graphSize = graphDuration * updateFrequency;
 
@@ -108,9 +108,10 @@ function renderGraph(graph){
         if(graph[0] != header[j]) {continue;}
         let canvas = graph[1];
         let properties = graph[2];
+        let sampleLength = properties.duration * updateFrequency;
         let width = canvas.width;
         let height = canvas.height;
-        let interval = width / graphSize;
+        let interval = width / sampleLength;
         let progress = 0;
         let stepX = properties.stepX;
         let stepY = properties.stepY;
@@ -127,15 +128,23 @@ function renderGraph(graph){
 
         // TODO: custom min and max, styles
         // Cut off first seconds or so of graph for clean scroll
+        let sample = []
+
+        if(sampleLength >= recent.length){
+            sample = structuredClone(recent);
+        }else{
+            sample = recent.slice(-sampleLength);
+        }
+
         let filtered = [];
-        for (let k = 0, kl = recent.length; k < kl; k++){
-            filtered.push(parseFloat(recent[k][j]));
+        for (let k = 0, kl = sample.length; k < kl; k++){
+            filtered.push(parseFloat(sample[k][j]));
         }
 
         let min = Math.min.apply(Math, filtered);
         let max = Math.max.apply(Math, filtered);
 
-        graph[3].innerHTML = graph[0] + " | " + recent[recent.length - 1][j];
+        graph[3].innerHTML = graph[0] + " | " + sample[sample.length - 1][j];
 
         let range = max - min;
         let ratio = height / 2 / range;
@@ -147,8 +156,8 @@ function renderGraph(graph){
             tMin = -properties.duration;
             tMax = 0;
         }else{
-            tMin = parseInt(recent[0][0]);
-            tMax = parseInt(recent[recent.length - 1][0]);
+            tMin = parseInt(sample[0][0]);
+            tMax = parseInt(sample[sample.length - 1][0]);
         }
         let rangeX = tMax - tMin;
         let ratioX = width / rangeX;
@@ -183,12 +192,12 @@ function renderGraph(graph){
 
         ctx.strokeStyle = properties.color;
         ctx.beginPath();
-        for (let k = 0, kl = recent.length; k < kl; k++){
+        for (let k = 0, kl = sample.length; k < kl; k++){
             if(k == 0){
-                ctx.moveTo(progress, height - (((recent[k][j]-min) * ratio) + adjustedMin));
-                // console.log(height - (((recent[k][j]-min) * ratio)));
+                ctx.moveTo(progress, height - (((sample[k][j]-min) * ratio) + adjustedMin));
+                // console.log(height - (((sample[k][j]-min) * ratio)));
             }else{
-                ctx.lineTo(progress, height - (((recent[k][j]-min) * ratio) + adjustedMin));
+                ctx.lineTo(progress, height - (((sample[k][j]-min) * ratio) + adjustedMin));
                 //ctx.stroke();
             }
             progress += interval;

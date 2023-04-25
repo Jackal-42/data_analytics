@@ -83,7 +83,10 @@ function createWindow(type, variant) {
         inputFields[0].value = prop.stepX.toString();
         inputFields[1].value = prop.stepY.toString();
         inputFields[2].value = prop.duration.toString();
-        inputFields[3].value = prop.scale.toString();
+        inputFields[3].checked = prop.relativeTime;
+        inputFields[4].value = prop.color.toString();
+        inputFields[5].value = prop.backgroundColor.toString();
+        inputFields[6].value = prop.lineThickness.toString();
 
         elem.getElementsByTagName('span')[0].innerHTML = recentGraph;
     }
@@ -149,7 +152,7 @@ function dragElement(elmnt)
     }
 }
 
-$(document).bind("click", function(event) {
+document.addEventListener("click", function(event) {
     if(event.target.className == "context"){return;}
     document.getElementById("contextMenu").style.display = "none";
 });
