@@ -10,8 +10,10 @@ let usedIDs = 0;
 const observer = new ResizeObserver(entries => {
     entries.forEach(entry => {
         let canvas = entry.target.getElementsByTagName('canvas')[0];
-        canvas.width = entry.contentRect.width;
-        canvas.height = entry.contentRect.height - entry.target.children[0].clientHeight;
+        canvas.width = entry.contentRect.width * 2;
+        canvas.height = (entry.contentRect.height - entry.target.children[0].clientHeight) * 2;
+        canvas.style.width = entry.contentRect.width + "px";
+        canvas.style.height = (entry.contentRect.height - entry.target.children[0].clientHeight) + "px";
         for(let i = 0; i < graphs.length; i++) {
             if(graphs[i][1] == canvas){
 
@@ -22,12 +24,15 @@ const observer = new ResizeObserver(entries => {
 })
 
 function graphProperties(){
+    this.isGauge = false;
     this.id = 0;
     this.name = "";
     this.duration = 30;
+    this.min = 0;
+    this.max = 100;
     this.scale = 1;
     this.color = "rgba(0, 71, 171, 1)";
-    this.lineThickness = 2;
+    this.lineThickness = 4;
     this.backgroundColor = "rgb(255, 255, 255)";
     this.axisProportions = 0;
     this.relativeTime = true;
@@ -55,6 +60,28 @@ function createWindow(type, variant) {
         topbar.innerHTML = type;
 
         graphs.push([variant, elem.getElementsByTagName('canvas')[0], new graphProperties(), topbar]);
+        graphs[graphs.length - 1][2].id = usedIDs;
+        graphs[graphs.length - 1][2].name = variant;
+
+        eval(`
+            topbar.addEventListener("contextmenu", function(e){
+                e.preventDefault();
+                recentGraph = ` + usedIDs + `;
+                contextMenu("cm_graph");
+            })
+        `)
+    }if(type == "Gauge"){
+        elem.append(graphTemplate.content.cloneNode(true));
+        elem.id = "window_" + usedIDs;
+        let topbar = elem.children[0];
+        topbar.id = "window_" + usedIDs + "_header"
+
+        topbar.innerHTML = type;
+
+        var props = new graphProperties();
+        props.isGauge = true;
+        props.lineThickness = "8";
+        graphs.push([variant, elem.getElementsByTagName('canvas')[0], props, topbar]);
         graphs[graphs.length - 1][2].id = usedIDs;
         graphs[graphs.length - 1][2].name = variant;
 
@@ -94,7 +121,7 @@ function createWindow(type, variant) {
     document.body.appendChild(elem);
     elem.style.top = "100px";
     elem.style.left = "100px";
-    if(type == "Graph"){
+    if(type == "Graph" || type == "Gauge"){
         observer.observe(elem);
     }
     dragElement(elem);

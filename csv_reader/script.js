@@ -103,38 +103,80 @@ function update(){
     }
 }
 
+const average = array => array.reduce((a, b) => a + b) / array.length;
+
 function renderGraph(graph){
+
+    let canvas = graph[1];
+    let properties = graph[2];
+    let sampleLength = properties.duration * updateFrequency;
+    let width = canvas.width;
+    let height = canvas.height;
+    let interval = width / sampleLength;
+    let progress = 0;
+
+    // TODO: custom min and max, styles
+    // Cut off first seconds or so of graph for clean scroll
+
+    let sample = []
+
+    if(sampleLength >= recent.length){
+        sample = structuredClone(recent);
+    }else{
+        sample = recent.slice(-sampleLength);
+    }
+
+    let ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, width, height);
+
+    //implement scale
+    ctx.lineCap = "round";
+    ctx.lineWidth = properties.lineThickness;
+    ctx.strokeStyle="rgba(0, 0, 0, 1)";
+    canvas.style.backgroundColor = properties.backgroundColor;
+
+    if(graph[2].isGauge){
+        for (let j = 0, jl = header.length; j < jl; j++){
+            if(graph[0] != header[j]) {continue;}
+            graph[3].innerHTML = graph[0] + " | " + sample[sample.length - 1][j];
+
+            let filtered = [];
+            for (let k = 0, kl = sample.length; k < kl; k++){
+                filtered.push(parseFloat(sample[k][j]));
+            }
+
+            var centerX = width / 2;
+            var centerY = height / 2;
+            var r = (Math.min(width, height) / 2) * 0.8;
+            var ratio = properties.max - properties.min;
+
+            // gauge
+            ctx.strokeStyle="rgba(0, 0, 0, 0.4)";
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, r, 0.75*Math.PI, 0.25*Math.PI);
+            ctx.stroke();
+
+            ctx.strokeStyle = properties.color;
+
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, r, 0.75*Math.PI, 0.75*Math.PI + (1.5*Math.PI) * (sample[sample.length - 1][j] / ratio));
+            ctx.stroke();
+
+            // text
+            ctx.textAlign = "center";
+            ctx.font = "bold 30px Monospace";
+
+            ctx.fillText(sample[sample.length - 1][j], centerX, centerY);
+            ctx.fillText("Mean", centerX, centerY + 48);
+            ctx.fillText(Math.round(average(filtered) * 100) / 100, centerX, centerY + 72);
+
+            return;
+        }
+    }
     for (let j = 0, jl = header.length; j < jl; j++){
         if(graph[0] != header[j]) {continue;}
-        let canvas = graph[1];
-        let properties = graph[2];
-        let sampleLength = properties.duration * updateFrequency;
-        let width = canvas.width;
-        let height = canvas.height;
-        let interval = width / sampleLength;
-        let progress = 0;
         let stepX = properties.stepX;
         let stepY = properties.stepY;
-
-        let ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, width, height);
-
-        //implement scale
-        ctx.lineCap = "round";
-        ctx.lineWidth = properties.lineThickness;
-        ctx.strokeStyle="rgba(0, 0, 0, 1)";
-        canvas.style.backgroundColor = properties.backgroundColor;
-        
-
-        // TODO: custom min and max, styles
-        // Cut off first seconds or so of graph for clean scroll
-        let sample = []
-
-        if(sampleLength >= recent.length){
-            sample = structuredClone(recent);
-        }else{
-            sample = recent.slice(-sampleLength);
-        }
 
         let filtered = [];
         for (let k = 0, kl = sample.length; k < kl; k++){
@@ -163,7 +205,7 @@ function renderGraph(graph){
         let ratioX = width / rangeX;
 
         ctx.strokeStyle="rgba(0, 0, 0, 0.25)";
-        ctx.font = "Monospace";
+        ctx.font = "26px Monospace";
 
         let start = nextMultiple(tMin, properties.stepX);
         let end = previousMultiple(tMax, properties.stepX);
