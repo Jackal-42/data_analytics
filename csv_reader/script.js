@@ -55,7 +55,7 @@ createWindow("Graph", "V");
 
 function update(){
     //getData();
-    doGET("../ev_data/car_data.csv", handleFileData);
+    doGET("../ev_data/temp.csv", handleFileData);
     let contents = contentString;
     graphSize = graphDuration * updateFrequency;
 
