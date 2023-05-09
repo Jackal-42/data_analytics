@@ -1,11 +1,15 @@
 let graphs = [];
+let analyticsWindows = [];
 // let graph = document.createElement('div');
 // let canvas = document.createElement('canvas');
 // canvas.style.backgroundColor = 'lightgray';
 // graph.appendChild(canvas);
 let graphTemplate = document.getElementById('graph');
 let propertiesTemplate = document.getElementById('properties');
+let gaugePropertiesTemplate = document.getElementById('gaugeProperties');
+let analyticsTemplate = document.getElementById('analytics');
 let usedIDs = 0;
+let zIndices = 0;
 
 const observer = new ResizeObserver(entries => {
     entries.forEach(entry => {
@@ -80,7 +84,7 @@ function createWindow(type, variant) {
 
         var props = new graphProperties();
         props.isGauge = true;
-        props.lineThickness = "8";
+        props.lineThickness = "16";
         graphs.push([variant, elem.getElementsByTagName('canvas')[0], props, topbar]);
         graphs[graphs.length - 1][2].id = usedIDs;
         graphs[graphs.length - 1][2].name = variant;
@@ -93,12 +97,16 @@ function createWindow(type, variant) {
             })
         `)
     }else if(type == "Properties"){
-        elem.append(propertiesTemplate.content.cloneNode(true));
+        let prop = propertiesById(recentGraph);
+        if(prop.isGauge){
+            elem.append(gaugePropertiesTemplate.content.cloneNode(true));
+        }else{
+            elem.append(propertiesTemplate.content.cloneNode(true));
+        }
         elem.id = "window_" + usedIDs;
         let topbar = elem.children[0];
         topbar.id = "window_" + usedIDs + "_header";
 
-        let prop = propertiesById(recentGraph);
         topbar.innerHTML = "Properties of \'" + prop.name + "\'";
 
         let paraFields = elem.getElementsByTagName("div")[0].getElementsByTagName("p");
@@ -107,13 +115,31 @@ function createWindow(type, variant) {
             inputFields.push(paraFields[i].getElementsByTagName("input")[0]);
         }
 
-        inputFields[0].value = prop.stepX.toString();
-        inputFields[1].value = prop.stepY.toString();
-        inputFields[2].value = prop.duration.toString();
-        inputFields[3].checked = prop.relativeTime;
-        inputFields[4].value = prop.color.toString();
-        inputFields[5].value = prop.backgroundColor.toString();
-        inputFields[6].value = prop.lineThickness.toString();
+        if(prop.isGauge){
+            inputFields[0].value = prop.min.toString();
+            inputFields[1].value = prop.max.toString();
+            inputFields[2].value = prop.duration.toString();
+            inputFields[3].value = prop.color.toString();
+            inputFields[4].value = prop.backgroundColor.toString();
+            inputFields[5].value = prop.lineThickness.toString();
+        }else{
+            inputFields[0].value = prop.stepX.toString();
+            inputFields[1].value = prop.stepY.toString();
+            inputFields[2].value = prop.duration.toString();
+            inputFields[3].checked = prop.relativeTime;
+            inputFields[4].value = prop.color.toString();
+            inputFields[5].value = prop.backgroundColor.toString();
+            inputFields[6].value = prop.lineThickness.toString();
+        }
+
+        elem.getElementsByTagName('span')[0].innerHTML = recentGraph;
+    }else if(type == "Analytics"){
+        elem.append(analyticsTemplate.content.cloneNode(true));
+        elem.id = "window_" + usedIDs;
+        let topbar = elem.children[0];
+        topbar.id = "window_" + usedIDs + "_header";
+        analyticsWindows.push(elem.children[3]);
+        topbar.innerHTML = "Analytics";
 
         elem.getElementsByTagName('span')[0].innerHTML = recentGraph;
     }
@@ -125,6 +151,10 @@ function createWindow(type, variant) {
         observer.observe(elem);
     }
     dragElement(elem);
+    elem.addEventListener("mousedown", function(){
+        zIndices++;
+        elem.style.zIndex = zIndices;
+    });
 
     usedIDs++;
 }

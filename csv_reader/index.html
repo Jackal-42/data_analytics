@@ -31,6 +31,21 @@
         </canvas>
     </template>
 
+    <template id="analytics">
+        <p id="header" style="background-color: rgb(42, 42, 42); width: calc(100% - 6px); text-align: left; cursor: move;
+        padding-bottom: 6px; padding-top: 6px; padding-left: 6px; margin: 0px; font-weight: bold;
+        font-family: monospace; color: lightgray; height: 30px;">Header</p>
+
+        <p style="font-weight: bold; color: white; position: absolute; top: 0px; right: 0px; margin: 0px; padding: 2px;
+        padding-left: 4px; padding-bottom: 4px; cursor: pointer;" onclick="this.parentElement.remove();"><b>✕&nbsp;</b></p>
+        <span style="display: block;"></span>
+
+        <div style="position: absolute; width: 100%; height: calc(100% - 28px); top: 28px; left: 0px; background-color: white;
+        font-family: monospace; overflow: scroll; padding-left: 2px;">
+            <p>test</p>
+        </div>
+    </template>
+
     <!--Make a new template for gauge properties-->
 
     <template id="properties">
@@ -63,14 +78,47 @@
         </div>
     </template>
 
+    <template id="gaugeProperties">
+        <p id="header" style="background-color: rgb(42, 42, 42); width: calc(100% - 6px); text-align: left; cursor: move;
+        padding-bottom: 6px; padding-top: 6px; padding-left: 6px; margin: 0px; font-weight: bold;
+        font-family: monospace; color: lightgray; height: 30px;">Header</p>
+
+        <p style="font-weight: bold; color: white; position: absolute; top: 0px; right: 0px; margin: 0px; padding: 2px;
+        padding-left: 4px; padding-bottom: 4px; cursor: pointer;" onclick="this.parentElement.remove();"><b>✕&nbsp;</b></p>
+        <span style="display: block;"></span>
+
+        <div style="position: absolute; width: 100%; height: calc(100% - 28px); top: 28px; left: 0px; background-color: white;
+        font-family: monospace; overflow: scroll; padding-left: 2px;">
+            <p style="margin: 0px;">Min: <input style="width: 50px; font-family: monospace;" type="text" oninput="propertiesById(parseInt(this.parentElement.parentElement.parentElement.getElementsByTagName('span')[0].innerHTML))
+            .min = parseFloat(this.value)"></p>
+            <p style="margin: 0px;">Max: <input style="width: 50px; font-family: monospace;" type="text" oninput="propertiesById(parseInt(this.parentElement.parentElement.parentElement.getElementsByTagName('span')[0].innerHTML))
+            .max = parseFloat(this.value)"></p>
+            <p style="margin: 0px;">Duration (sec): <input style="width: 50px; font-family: monospace;" type="text" oninput="propertiesById(parseInt(this.parentElement.parentElement.parentElement.getElementsByTagName('span')[0].innerHTML))
+            .duration = parseFloat(this.value)"></p>
+            <p style="margin: 0px;">Color:<br><input style="width: 200px; font-family: monospace;" type="text" oninput="propertiesById(parseInt(this.parentElement.parentElement.parentElement.getElementsByTagName('span')[0].innerHTML))
+            .color = this.value"></p>
+            <p style="margin: 0px;">Background Color:<br><input style="width: 200px; font-family: monospace;" type="text" oninput="propertiesById(parseInt(this.parentElement.parentElement.parentElement.getElementsByTagName('span')[0].innerHTML))
+            .backgroundColor = this.value"></p>
+            <p style="margin: 0px;">Line Thickness: <input style="width: 50px; font-family: monospace;" type="text" oninput="propertiesById(parseInt(this.parentElement.parentElement.parentElement.getElementsByTagName('span')[0].innerHTML))
+            .lineThickness = parseFloat(this.value)"></p>
+            
+        </div>
+    </template>
+
     <div id="contextMenu">
         <p>Test</p>
     </div>
 
     <div id="topbar">
-        <p class="context" onclick="contextMenu('cm_window')">
-            Window
-        </p>
+        <span class="context" onclick="contextMenu('cm_window>graph')">
+            Graph
+        </span>
+        <span class="context" onclick="contextMenu('cm_window>gauge')">
+            Gauge
+        </span>
+        <span class="context" onclick="createWindow('Analytics', 'null')">
+            Analytics
+        </span>
     </div>
 
     <p id="test"></p>
@@ -83,7 +131,7 @@
                 Graph
             </li>
 
-            <li class="context" onclick="contextMenu('cm_window>gauge')">
+            <li class="context" onclick="createWindow('cm_window>gauge')">
                 Gauge
             </li>
         </ul>

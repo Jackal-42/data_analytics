@@ -89,6 +89,7 @@ log = "../ev_data/car_data.csv"
 # CSV files. Both logs are in ev_data.
 rows = []
 maxRows = 32
+currentAmpHours = 16.6
 
 # with open(filename, 'w') as csvfile:
 #     csvwriter = csv.writer(csvfile)
@@ -106,13 +107,14 @@ while True:
         else:
             data = ser.readline().decode().replace("\n","")
         currentsec = time.time()-start_time
-        data = str(round(currentsec,2))+"\t"+ data # Format time into the chart
+        currentAmpHours -= 0.004
+        data = str(round(currentsec,2))+"\t"+str(round(currentAmpHours,2))+"\t"+ data # Format time into the chart
         print(data)
         csvdata = data.replace("\t"," ").replace("\r","").replace("\n","").split(" ") # Prepare data for writing into a CSV file
 
         if debug == True:
             csvdata[2] = str(float(csvdata[2])+randint(0,10)) # Create variations in the data for debug testing
-            csvdata[1] = str(float(csvdata[1])+randint(5,21))
+            #csvdata[1] = str(float(csvdata[1])+randint(5,21))
             print(csvdata)
         for i in range(len(csvdata)):
             csvdata[i] = str(round(float(csvdata[i]),2))

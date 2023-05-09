@@ -53,7 +53,7 @@ p{
     top: 0px;
 }
 
-#topbar p{
+#topbar span{
     margin: 0px;
     font-family: monospace;
     color: lightgray;

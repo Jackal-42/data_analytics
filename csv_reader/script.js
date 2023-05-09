@@ -101,6 +101,22 @@ function update(){
     for(let i = 0, l = graphs.length; i < l; i++){
         renderGraph(graphs[i]);
     }
+
+    for(let i = 0; i < analyticsWindows.length; i++){
+        updateAnalytics(analyticsWindows[i]);
+    }
+}
+
+function updateAnalytics(analyticsWindow){
+    try{
+        let amphPerS = (parseFloat(recent[recent.length - 15][1]) - parseFloat(recent[recent.length - 1][1])) / 30;
+        let minutesRemaining = ((parseFloat(recent[recent.length - 1][1]) / amphPerS) / 60).toFixed(2);
+
+        analyticsWindow.innerHTML = "<p><b>" + minutesRemaining + " minutes remaining</b></p>";
+        analyticsWindow.innerHTML += "<p><b>using " + (amphPerS * 60).toFixed(3) + " amp-hours per minute</b></p>";
+    }catch{
+        analyticsWindow.innerHTML = "<p><b>The software must run for 30 seconds before an accurate estimation can be provided.</b></p>";
+    }
 }
 
 const average = array => array.reduce((a, b) => a + b) / array.length;
