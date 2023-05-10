@@ -1,5 +1,6 @@
 let graphs = [];
 let analyticsWindows = [];
+let brainCells = 2937491845;
 // let graph = document.createElement('div');
 // let canvas = document.createElement('canvas');
 // canvas.style.backgroundColor = 'lightgray';
@@ -8,6 +9,7 @@ let graphTemplate = document.getElementById('graph');
 let propertiesTemplate = document.getElementById('properties');
 let gaugePropertiesTemplate = document.getElementById('gaugeProperties');
 let analyticsTemplate = document.getElementById('analytics');
+let luigiTemplate = document.getElementById('luigi');
 let usedIDs = 0;
 let zIndices = 0;
 
@@ -20,7 +22,6 @@ const observer = new ResizeObserver(entries => {
         canvas.style.height = (entry.contentRect.height - entry.target.children[0].clientHeight) + "px";
         for(let i = 0; i < graphs.length; i++) {
             if(graphs[i][1] == canvas){
-
                 renderGraph(graphs[i]);
             }
         }
@@ -52,7 +53,7 @@ function createWindow(type, variant) {
     let elem = document.createElement('div')
     elem.style = `position: absolute; border-radius: 6px; overflow: hidden;
         box-shadow: 6px 6px 8px rgb(42, 42, 42, 0.25); resize: both;
-        min-width: 200px; min-height: 160px;`
+        min-width: 200px; min-height: 160px; rotate: 0deg;`
     elem.classList.add('window');
 
     if(type == "Graph"){
@@ -142,9 +143,34 @@ function createWindow(type, variant) {
         topbar.innerHTML = "Analytics";
 
         elem.getElementsByTagName('span')[0].innerHTML = recentGraph;
+    }else if(type == "luigi"){
+        elem.style = `position: absolute; border-radius: 6px; overflow: hidden;
+        box-shadow: 6px 6px 8px rgb(42, 42, 42, 0.25); resize: both;
+        min-width: 300px; min-height: 240px; rotate: 0deg;`
+        elem.append(luigiTemplate.content.cloneNode(true));
+        elem.id = "window_" + usedIDs;
+        let topbar = elem.children[0];
+        topbar.id = "window_" + usedIDs + "_header";
+        topbar.innerHTML = "Moral Support";
+        elem.style.transition = "top 0.2s, left 0.2s";
+
+        elem.getElementsByTagName('span')[0].innerHTML = recentGraph;
+
+        eval(`
+            topbar.addEventListener("contextmenu", function(e){
+                e.preventDefault();
+                recentGraph = ` + usedIDs + `;
+                contextMenu("cm_luigi");
+            })
+        `)
     }
 
-    document.body.appendChild(elem);
+    if(type == "luigi" && recentGraph != -1){
+        graphById(recentGraph).appendChild(elem);
+    }else{
+        document.body.children[1].appendChild(elem);
+    }
+    
     elem.style.top = "100px";
     elem.style.left = "100px";
     if(type == "Graph" || type == "Gauge"){
@@ -164,6 +190,30 @@ function propertiesById(id){
         if(graphs[i][2].id == id){
             return graphs[i][2];
         }
+    }
+}
+
+function graphById(id){
+    for(let i = 0; i < graphs.length; i++) {
+        if(graphs[i][2].id == id){
+            return graphs[i][1];
+        }
+    }
+}
+
+function makeTransparent(){
+    if(graphById(recentGraph).parentElement.style.opacity == "0.5"){
+        graphById(recentGraph).parentElement.style.opacity = "1";
+    }else{
+        graphById(recentGraph).parentElement.style.opacity = "0.5";
+    }
+}
+
+function rotate(amount, isAdding){
+    if(isAdding){
+        graphById(recentGraph).parentElement.style.rotate = (parseInt(graphById(recentGraph).parentElement.style.rotate.slice(0, -3)) + amount) + "deg";
+    }else{
+        graphById(recentGraph).parentElement.style.rotate = amount + "deg";
     }
 }
 
@@ -187,6 +237,7 @@ function dragElement(elmnt)
       document.onmouseup = closeDragElement;
       // call a function whenever the cursor moves:
       document.onmousemove = elementDrag;
+      elmnt.style.transition = "";
     }
   
     function elementDrag(e) {
@@ -206,6 +257,7 @@ function dragElement(elmnt)
       // stop moving when mouse button is released:
       document.onmouseup = null;
       document.onmousemove = null;
+      elmnt.style.transition = "top 0.2s, left 0.2s";
     }
 }
 

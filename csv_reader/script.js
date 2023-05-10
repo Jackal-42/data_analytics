@@ -1,5 +1,5 @@
 let graphDuration = 60;
-let updateFrequency = 5;
+let updateFrequency = 10;
 
 let contents = "";
 let contentString = "";
@@ -51,9 +51,10 @@ let graphSize = graphDuration * updateFrequency;
 setInterval(update, 1000/updateFrequency);
 //update();
 
-createWindow("Graph", "V");
+// createWindow("Graph", "V");
 
 function update(){
+    brainCells -= Math.floor(Math.random() * 20);
     //getData();
     doGET("../ev_data/temp.csv", handleFileData);
     let contents = contentString;
@@ -114,6 +115,7 @@ function updateAnalytics(analyticsWindow){
 
         analyticsWindow.innerHTML = "<p><b>" + minutesRemaining + " minutes remaining</b></p>";
         analyticsWindow.innerHTML += "<p><b>using " + (amphPerS * 60).toFixed(3) + " amp-hours per minute</b></p>";
+        analyticsWindow.innerHTML += "<p><b>team collective brain cells: " + brainCells + "</b></p>";
     }catch{
         analyticsWindow.innerHTML = "<p><b>The software must run for 30 seconds before an accurate estimation can be provided.</b></p>";
     }
