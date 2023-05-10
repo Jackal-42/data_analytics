@@ -173,6 +173,7 @@ function createWindow(type, variant) {
     
     elem.style.top = "100px";
     elem.style.left = "100px";
+    elem.style.zIndex = usedIDs;
     if(type == "Graph" || type == "Gauge"){
         observer.observe(elem);
     }
