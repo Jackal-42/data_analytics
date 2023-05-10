@@ -110,7 +110,7 @@ function update(){
 
 function updateAnalytics(analyticsWindow){
     try{
-        let amphPerS = (parseFloat(recent[recent.length - 15][1]) - parseFloat(recent[recent.length - 1][1])) / 30;
+        let amphPerS = (parseFloat(recent[recent.length - 151][1]) - parseFloat(recent[recent.length - 1][1])) / 30;
         let minutesRemaining = ((parseFloat(recent[recent.length - 1][1]) / amphPerS) / 60).toFixed(2);
 
         analyticsWindow.innerHTML = "<p><b>" + minutesRemaining + " minutes remaining</b></p>";
