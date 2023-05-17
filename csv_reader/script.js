@@ -1,5 +1,6 @@
 let graphDuration = 60;
 let updateFrequency = 10;
+let batteryCapacity = 16;
 
 let contents = "";
 let contentString = "";
@@ -110,14 +111,14 @@ function update(){
 
 function updateAnalytics(analyticsWindow){
     try{
-        let amphPerS = (parseFloat(recent[recent.length - 151][1]) - parseFloat(recent[recent.length - 1][1])) / 30;
-        let minutesRemaining = ((parseFloat(recent[recent.length - 1][1]) / amphPerS) / 60).toFixed(2);
+        let amphPerS = ((batteryCapacity - parseFloat(recent[recent.length - (updateFrequency * 5) - 1][1])) - (batteryCapacity - parseFloat(recent[recent.length - 1][1]))) / 30;
+        let minutesRemaining = (((batteryCapacity - parseFloat(recent[recent.length - 1][1])) / amphPerS) / 60).toFixed(2);
 
-        analyticsWindow.innerHTML = "<p><b>" + minutesRemaining + " minutes remaining</b></p>";
+        analyticsWindow.innerHTML = "<br><p><b>" + minutesRemaining + " minutes remaining</b></p>";
         analyticsWindow.innerHTML += "<p><b>using " + (amphPerS * 60).toFixed(3) + " amp-hours per minute</b></p>";
         analyticsWindow.innerHTML += "<p><b>team collective brain cells: " + brainCells + "</b></p>";
     }catch{
-        analyticsWindow.innerHTML = "<p><b>The software must run for 30 seconds before an accurate estimation can be provided.</b></p>";
+        analyticsWindow.innerHTML = "<br><p><b>The software must run for 30 seconds before an accurate estimation can be provided.</b></p>";
     }
 }
 
